@@ -22,37 +22,42 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        tabBarStyle: {
+          elevation: 0,
+          shadowOpacity: 0,
+          borderTopWidth: 0.5,
+          borderTopColor: Colors[colorScheme ?? 'light'].tabIconDefault,
+        }
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerTitle: 'Crazy HM Recipes',
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="search"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Search',
+          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
         }}
+      />
+      <Tabs.Screen
+      name="create"
+      options={{
+        title: 'New Recipe',
+        tabBarIcon: ({color}) => <TabBarIcon name="plus-square" color="{color}"/>,
+      }}
+      />
+      <Tabs.Screen
+      name="profile"
+      options={{
+        title: 'My Recipes',
+        tabBarIcon: ({color}) => <TabBarIcon name='user' color="{color}"/>,
+      }}
       />
     </Tabs>
   );
