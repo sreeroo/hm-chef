@@ -17,7 +17,7 @@ export default function HomeScreen() {
         <Text>Unlock Culinary Magic at Home</Text>
         
         <Text>
-          Your kitchen, your rules. Discover mouthwatering recipes that turn
+          Discover mouthwatering recipes that turn
           everyday ingredients into extraordinary meals!
         </Text>
         
