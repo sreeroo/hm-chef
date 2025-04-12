@@ -1,138 +1,112 @@
 import React from 'react';
-import { StyleSheet, ImageBackground, Image, View as RNView, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 
 export default function HomeScreen() {
   return (
-    <View style={styles.scrollContainer}>
-      <ImageBackground 
-        source={require('@/assets/images/chef1.jpg')}
-        style={styles.hero}
-        imageStyle={{ opacity: 1 }}
-        blurRadius={1}
-      >
-        <Text style={styles.heroTitle}>Crazy HM Recipes</Text>
-        <Text style={styles.heroSubtitle}>Unlock Culinary Magic at Home</Text>
-      </ImageBackground>
+    <View style={styles.container}>
+      {/* Chef Image */}
+      <View style={styles.chefContainer}>
+        <Image 
+          source={require('@/assets/images/chef1.jpg')}
+          style={styles.chefImage}
+        />
+      </View>
 
-      <View style={styles.container}>
-        <Text style={styles.sectionTitle}>✨ Featured Recipe</Text>
-        <View style={styles.card}>
-          <Image 
-            source={require('@/assets/images/chicken_with_cheese.jpg')}
-            style={styles.cardImage}
-          />
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Creamy Tuscan Chicken</Text>
-            <Text style={styles.cardDescription}>
-              Juicy chicken in a creamy garlic parmesan sauce with sun-dried tomatoes and spinach.
-            </Text>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Cook This</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+      {/* Welcome Section */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Welcome to HM Chef!</Text>
+        <Text style={styles.cardDescription}>
+          Discover delicious recipes and bring out the chef in you. Let's make cooking fun and easy!
+        </Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Explore Recipes</Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.quoteContainer}>
-          <Text style={styles.quote}>
-            "The only thing I like better than talking about food is eating.”
-          </Text>
-          <Text style={styles.author}>- John Walters</Text>
-        </View>
+      {/* Quote Section */}
+      <View style={styles.quoteContainer}>
+        <Text style={styles.quote}>
+          "The only thing I like better than talking about food is eating.”
+        </Text>
+        <Text style={styles.author}>- John Walters</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: '#fffaf5',
-  },
-  hero: {
-    height: 260,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#ffefd5',
-  },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#5e3c00',
-    textAlign: 'center',
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    color: '#5e3c00',
-    marginTop: 8,
-    textAlign: 'center',
-  },
   container: {
+    flex: 1,
+    backgroundColor: '#fff5f5', // Light red background
     padding: 20,
-    gap: 20,
+    justifyContent: 'space-between',
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 10,
+  chefContainer: {
+    backgroundColor: '#fff5f5',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  chefImage: {
+    width: 250, // Increased size
+    height: 250,
+    borderRadius: 125, // Circular image
+    borderWidth: 6,
+    borderColor: '#ff6b6b', // Modern red border
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffecec', // Light red card background
     borderRadius: 20,
-    overflow: 'hidden',
+    padding: 30, // Increased padding
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-  },
-  cardImage: {
-    width: '100%',
-    height: 180,
-  },
-  cardContent: {
-    padding: 15,
+    marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: 26, // Increased font size
     fontWeight: 'bold',
-    color: '#402b00',
-    marginBottom: 6,
+    color: '#d64545', // Darker red for text
+    marginBottom: 15,
+    textAlign: 'center',
   },
   cardDescription: {
-    fontSize: 14,
+    fontSize: 18, // Increased font size
     color: '#555',
-    marginBottom: 12,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   button: {
-    backgroundColor: '#ffa500',
-    paddingVertical: 10,
-    borderRadius: 10,
+    backgroundColor: '#ff6b6b', // Modern red button
+    paddingVertical: 15, // Increased padding
+    paddingHorizontal: 30,
+    borderRadius: 15,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fffaf5',
+    color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 18, // Increased font size
   },
   quoteContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#fff8ec',
-    borderLeftWidth: 4,
-    borderLeftColor: '#ffa500',
-    borderRadius: 10,
+    padding: 20, // Increased padding
+    backgroundColor: '#ffecec', // Light red background for quote
+    borderLeftWidth: 6,
+    borderLeftColor: '#ff6b6b', // Modern red accent
+    borderRadius: 15,
   },
   quote: {
     fontStyle: 'italic',
-    fontSize: 16,
-    color: '#4a3b28',
+    fontSize: 20, // Increased font size
+    color: '#d64545', // Darker red for quote text
+    textAlign: 'center',
+    marginBottom: 10,
   },
   author: {
-    fontSize: 14,
-    color: '#7a5c3b',
-    marginTop: 8,
+    fontSize: 16, // Increased font size
+    color: '#a33a3a', // Muted red for author text
     textAlign: 'right',
   },
 });
