@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
 
 export default function HomeScreen() {
   return (
@@ -38,12 +39,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff5f5', // Light red background
+    backgroundColor: Colors.light.background, // Use centralized color
     padding: 20,
     justifyContent: 'space-between',
   },
   chefContainer: {
-    backgroundColor: '#fff5f5',
+    backgroundColor: Colors.light.background, // Use centralized color
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -52,14 +53,14 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 125, // Circular image
     borderWidth: 6,
-    borderColor: '#ff6b6b', // Modern red border
+    borderColor: Colors.light.primary, // Use centralized color
   },
   card: {
-    backgroundColor: '#ffecec', // Light red card background
+    backgroundColor: Colors.light.primaryLight, // Use centralized color
     borderRadius: 20,
     padding: 30, // Increased padding
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.light.black, // Use centralized color
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
@@ -68,45 +69,45 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 26, // Increased font size
     fontWeight: 'bold',
-    color: '#d64545', // Darker red for text
+    color: Colors.light.primaryDark, // Use centralized color
     marginBottom: 15,
     textAlign: 'center',
   },
   cardDescription: {
     fontSize: 18, // Increased font size
-    color: '#555',
+    color: Colors.light.text, // Use centralized color
     marginBottom: 20,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#ff6b6b', // Modern red button
+    backgroundColor: Colors.light.primary, // Use centralized color
     paddingVertical: 15, // Increased padding
     paddingHorizontal: 30,
     borderRadius: 15,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.light.white, // Use centralized color
     fontWeight: 'bold',
     fontSize: 18, // Increased font size
   },
   quoteContainer: {
     padding: 20, // Increased padding
-    backgroundColor: '#ffecec', // Light red background for quote
+    backgroundColor: Colors.light.primaryLight, // Use centralized color
     borderLeftWidth: 6,
-    borderLeftColor: '#ff6b6b', // Modern red accent
+    borderLeftColor: Colors.light.primary, // Use centralized color
     borderRadius: 15,
   },
   quote: {
     fontStyle: 'italic',
     fontSize: 20, // Increased font size
-    color: '#d64545', // Darker red for quote text
+    color: Colors.light.primaryDark, // Use centralized color
     textAlign: 'center',
     marginBottom: 10,
   },
   author: {
     fontSize: 16, // Increased font size
-    color: '#a33a3a', // Muted red for author text
+    color: Colors.light.secondary, // Use centralized color
     textAlign: 'right',
   },
 });
