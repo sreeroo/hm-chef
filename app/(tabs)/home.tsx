@@ -1,30 +1,60 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
+import React from 'react';
+import { StyleSheet, Image, View as RNView, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 
-export default function TabTwoScreen() {
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>HOME</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <ScrollView style={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Welcome to Crazy HM Recipes</Text>
+        
+          <Image 
+            source={require('@/assets/images/chef1.jpg')} 
+            style={styles.image}
+            resizeMode="contain"
+          />
+
+        <Text>Unlock Culinary Magic at Home</Text>
+        
+        <Text>
+          Your kitchen, your rules. Discover mouthwatering recipes that turn
+          everyday ingredients into extraordinary meals!
+        </Text>
+        
+        <Text>
+          "The only thing I like better than talking about food is eating.” 
+          
+        </Text>
+        
+        <Text>- John Walters </Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginTop: 20,
+    textAlign: 'center',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
+  imageContainer: {
+    width: '100%',
+    height: 250,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  image: {
     width: '80%',
+    height: '100%',
   },
 });

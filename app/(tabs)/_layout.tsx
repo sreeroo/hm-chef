@@ -29,7 +29,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} />,
-          headerTitle: 'Crazy HM Recipes',
+          headerTitle: 'Home',
         }}
       />
       <Tabs.Screen
@@ -37,6 +37,7 @@ export default function TabLayout() {
         options={{
           title: 'Search',
           tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} />,
+          headerTitle: 'Search',
         }}
       />
       <Tabs.Screen
@@ -44,6 +45,8 @@ export default function TabLayout() {
       options={{
         title: 'New Recipe',
         tabBarIcon: ({color}) => <MaterialIcons name="add" color="{color}"/>,
+        headerTitle: 'New Recipe',
+
       }}
       />
       <Tabs.Screen
@@ -51,6 +54,7 @@ export default function TabLayout() {
       options={{
         title: 'My Recipes',
         tabBarIcon: ({color}) => <MaterialIcons name='favorite' color="{color}"/>,
+        headerTitle: 'My Recipes',
       }}
       />
     </Tabs>
