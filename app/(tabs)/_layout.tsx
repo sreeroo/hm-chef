@@ -31,6 +31,7 @@ export default function TabLayout() {
           height: 60,
         }
       }}>
+      <Tabs.Screen redirect name="index" />
       <Tabs.Screen
         name="home"
         options={{
