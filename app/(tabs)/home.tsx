@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
+import {Link, router} from 'expo-router'
 
 export default function HomeScreen() {
   return (
@@ -20,9 +21,10 @@ export default function HomeScreen() {
         <Text style={styles.cardDescription}>
           Discover delicious recipes and bring out the chef in you. Let's make cooking fun and easy!
         </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress= {()=> router.navigate("/search")}>
           <Text style={styles.buttonText}>Explore Recipes</Text>
         </TouchableOpacity>
+
       </View>
 
       {/* Quote Section */}

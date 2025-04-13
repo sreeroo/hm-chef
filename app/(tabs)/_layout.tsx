@@ -18,7 +18,7 @@ export default function TabLayout() {
           letterSpacing: 1.5,
           fontSize: 24,
           fontWeight: 'bold',
-          color: '#e63946',
+          color: '#E63946',
           borderRadius: 10,
         },
         tabBarStyle: {
@@ -36,7 +36,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} size={26} />,
-          headerTitle: 'HOME',
+          headerTitle: 'Home',
           headerTitleAlign: 'center',
         }}
       />
@@ -45,7 +45,7 @@ export default function TabLayout() {
         options={{
           title: 'Search',
           tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} size={26} />,
-          headerTitle: 'DISCOVER',
+          headerTitle: 'Discover',
           headerTitleAlign: 'center',
         }}
       />
@@ -54,7 +54,7 @@ export default function TabLayout() {
         options={{
           title: 'Create',
           tabBarIcon: ({color}) => <MaterialIcons name="add" color={color} size={26} />,
-          headerTitle: 'NEW RECIPE',
+          headerTitle: 'New Recipe',
           headerTitleAlign: 'center',
         }}
       />
@@ -63,7 +63,7 @@ export default function TabLayout() {
         options={{
           title: 'My Recipes',
           tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={26} />,
-          headerTitle: 'MY COLLECTION',
+          headerTitle: 'My Recipes',
           headerTitleAlign: 'center',
         }}
       />
