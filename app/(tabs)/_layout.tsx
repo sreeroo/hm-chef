@@ -2,34 +2,52 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
+import { useTheme } from '@/context/ThemeContext';
+import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 export default function TabLayout() {
+
+  const themeColor = useTheme();
+  useFonts({
+    Poppins_400Regular,
+    Poppins_700Bold,
+  });
+  
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#e63946',
-        tabBarInactiveTintColor: '#e63946',
+        tabBarActiveTintColor:themeColor.themeColors.tabIconSelected,
+        tabBarInactiveTintColor: themeColor.themeColors.tabIconDefault,
         headerShown: useClientOnlyValue(false, true),
         headerStyle: {
-          backgroundColor: '#ffecec', // Modern red header
+          backgroundColor: themeColor.themeColors.background,
+          borderBottomWidth: 0, 
+          height: 50,
+          elevation: 5, 
+          borderTopColor: themeColor.themeColors.primaryLight,
         },
         headerTitleStyle: {
           letterSpacing: 1.5,
-          fontSize: 24,
-          fontWeight: 'bold',
-          color: '#E63946',
-          borderRadius: 10,
+          fontSize: 18,
+          color: themeColor.themeColors.primaryDark,
+          fontFamily: "Poppins_700Bold"
         },
         tabBarStyle: {
-          elevation: 0,
-          shadowOpacity: 0,
-          borderTopWidth: 1,
-          borderTopColor: '#e63946',
-          backgroundColor: '#ffecec',
+          elevation: 5,
+          shadowColor: themeColor.themeColors.primaryDark,
+          shadowOpacity: 0.2,
+          shadowRadius: 10,
+          borderTopWidth: 0,
+          paddingVertical: 10,
+          borderTopColor: themeColor.themeColors.primaryLight,
+          backgroundColor: themeColor.themeColors.background,
           paddingTop: 5,
           height: 60,
-        }
+        },
+        tabBarLabelStyle: {
+          fontSize: 12, // Modern and compact font size
+          fontWeight: '600',
+        },
       }}>
       <Tabs.Screen redirect name="index" />
       <Tabs.Screen
