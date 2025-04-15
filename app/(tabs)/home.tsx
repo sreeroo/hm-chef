@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Image, View, Text } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
-import Card from '@/components/Card';
 import { router } from 'expo-router';
+import WelcomeCard from '@/components/Card';
 
 export default function HomeScreen() {
   const { themeColors } = useTheme();
@@ -18,7 +18,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Welcome Section */}
-      <Card
+      <WelcomeCard
         title="Welcome to HM Chef!"
         description="Discover delicious recipes and bring out the chef in you. Let's make cooking fun and easy!"
         buttonText="Explore Recipes"

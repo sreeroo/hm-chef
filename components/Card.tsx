@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, StyleProp, ViewStyle, TextSty
 import Colors from '@/constants/Colors';
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
-interface CardProps {
+interface WelcomeCardProps {
   title: string;
   description?: string;
   onPress?: () => void;
@@ -17,7 +17,7 @@ interface CardProps {
 
 
 
-const Card: React.FC<CardProps> = ({
+const WelcomeCard: React.FC<WelcomeCardProps> = ({
   title,
   description,
   onPress,
@@ -57,15 +57,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 26,
+    fontSize: 22,
+    margin: 0,
     color: Colors.light.primaryDark,
-    marginBottom: 15,
+    marginBottom: 5,
     textAlign: 'center',
   },
   cardDescription: {
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.light.text,
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   button: {
@@ -82,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Card;
+export default WelcomeCard;
