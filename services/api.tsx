@@ -1,3 +1,5 @@
+import { Ingredient } from "@/context/RecipeContext";
+
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
 export async function getMealsByName(name: string) {
@@ -44,3 +46,21 @@ export async function getMealDetailsById(id: string) {
     const data = await res.json();
     return data.meals ? data.meals[0] : null;
 }
+
+export const parseIngredients = (mealData: any): Ingredient[] => {
+  const ingredients: Ingredient[] = [];
+  for (let i = 1; i <= 20; i++) {
+      const ingredient = mealData[`strIngredient${i}`];
+      const measure = mealData[`strMeasure${i}`];
+      if (ingredient && ingredient.trim() !== '') {
+          ingredients.push({
+              id: `ing-${i}`, // Simple ID for the list key
+              name: ingredient,
+              measure: measure || '',
+          });
+      } else {
+          break; // Stop if no more ingredients
+      }
+  }
+  return ingredients;
+};

@@ -14,6 +14,8 @@ export default {
     secondary: '#a33a3a', // Muted red
     white: '#fff',
     black: '#000',
+    cardBackground: '#ffecec',
+    shadowColor:'#000',
   },
   dark: {
     text: '#fff',
@@ -27,5 +29,7 @@ export default {
     secondary: '#a33a3a', // Muted red
     white: '#fff',
     black: '#000',
+    cardBackground: '#ff9999',
+    shadowColor:'#fff',
   },
 };
