@@ -4,10 +4,17 @@ import { Text, View } from '@/components/Themed';
 import { SearchBar } from '@rneui/themed';
 import { Image } from 'expo-image';
 import { useTheme } from '@/context/ThemeContext';
-import { getMealsByName, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
-import RecipeCardSkeleton from '@/components/RecipeCardSkeleton'; // Import the skeleton
+import { getMealsByName, getMealDetailsById, parseIngredients, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
+import RecipeCardSkeleton from '@/components/Cards/RecipeCardSkeleton'; 
+import { MaterialIcons } from '@expo/vector-icons'; 
+import { useRecipes, Recipe} from '@/context/RecipeContext';
+import RecipeCard from '@/components/Cards/RecipeCard';
+import { router, useRouter } from 'expo-router'; // Import useRouter
+import SectionTitle from '@/components/SectionTitle';
+import ListEmpty from '@/components/ListEmpty';
+import SimpleModal from '@/components/SimpleModal'; // Import the modal
+import RecipeDetailContent from '@/components/RecipeDetailContent'; // Import the content component
 
-const { width } = Dimensions.get('window');
 
 const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
@@ -15,6 +22,7 @@ const blurhash =
 
 export default function SearchScreen() {
   const { themeColors } = useTheme();
+  const { addRecipe, removeRecipe, isFavorite } = useRecipes(); // Get context functions
   const [searchQuery, setSearchQuery] = useState('');
   const [displayedRecipes, setDisplayedRecipes] = useState<any[]>([]);
   const [initialFeaturedRecipes, setInitialFeaturedRecipes] = useState<any[]>([]);
@@ -23,6 +31,8 @@ export default function SearchScreen() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 
   // Fetch initial featured recipes and categories
   useEffect(() => {
@@ -49,12 +59,56 @@ export default function SearchScreen() {
     return () => { isMounted = false; }; 
   }, []);
 
+  const handleToggleFavorite = async (basicRecipeData: any) => { // Make async
+    const recipeId = basicRecipeData.idMeal;
+
+    if (isFavorite(recipeId)) {
+      // If already favorite, just remove it
+      removeRecipe(recipeId);
+    } else {
+      // If not favorite, fetch full details before adding
+      try {
+        const fullMealData = await getMealDetailsById(recipeId);
+        if (fullMealData) {
+          // --- FIX: Construct the complete Recipe object correctly ---
+          const newFavorite: Recipe = {
+            id: fullMealData.idMeal,
+            name: fullMealData.strMeal,
+            // Correctly map API fields to Recipe interface fields
+            category: fullMealData.strCategory || '',      // Use 'category' field
+            imageUri: fullMealData.strMealThumb,
+            ingredients: parseIngredients(fullMealData), // Parse ingredients
+            instructions: fullMealData.strInstructions || '', 
+          };
+          addRecipe(newFavorite); // Add the complete recipe to context
+        } else {
+          console.error(`Failed to fetch details for ${recipeId} before favoriting.`);
+          // Optionally show an alert
+        }
+      } catch (error) {
+        console.error(`Error fetching details for ${recipeId}:`, error);
+        // Optionally show an alert
+      }
+    }
+  };
+
+  const handleOpenRecipe = (recipeId: string) => {
+    setSelectedRecipeId(recipeId);
+    setIsModalVisible(true);
+  };
+
+    // Function to close the modal
+    const handleCloseModal = () => {
+      setIsModalVisible(false);
+      setSelectedRecipeId(null); // Clear selected ID when closing
+    };
+  
+
   // Handle Search Input
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
     setSelectedCategory(null); // Clear category selection when searching
     if (query.trim() === "") {
-      setIsSearching(false);
       setIsSearching(false);
       setDisplayedRecipes(initialFeaturedRecipes); // Reset to initial featured
       setLoadingRecipes(false); // No loading needed for reset
@@ -96,26 +150,6 @@ export default function SearchScreen() {
       }
   }
   }, [selectedCategory, initialFeaturedRecipes]);
-  // Render Recipe Item (used for featured and results)
-  const renderRecipeItem = ({ item }: { item: any }) => (
-    <TouchableOpacity style={[styles.searchCard, { backgroundColor: themeColors.primaryLight }]}>
-      {/* Use expo-image */}
-      <Image
-        placeholder={{ blurhash }}
-        style={styles.searchImage}
-        source={{ uri: item.strMealThumb }}
-        contentFit="cover" 
-        transition={600}
-      />
-      <View style={styles.searchCardContent}>
-        <Text style={[styles.searchTitle, { color: themeColors.primaryDark }]} numberOfLines={2}>{item.strMeal}</Text>
-        {!selectedCategory && item.strCategory && (
-          <Text style={[styles.searchCategory, { color: themeColors.secondary }]}>{item.strCategory}</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
 
 
   // Render Category Item
@@ -138,6 +172,7 @@ export default function SearchScreen() {
   }
 
   return (
+    <>
     <ScrollView
         style={[styles.container, { backgroundColor: themeColors.background }]}
         stickyHeaderIndices={[0]} // Make the SearchBar sticky
@@ -161,7 +196,8 @@ export default function SearchScreen() {
 
         {/* Categories Section */}
         <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>Categories</Text>
+            {/* Use SectionTitle component */}
+            <SectionTitle>Categories</SectionTitle>
             {loadingCategories ? (
                 <ActivityIndicator color={themeColors.primary} style={{ marginVertical: 10 }}/>
             ) : (
@@ -172,46 +208,61 @@ export default function SearchScreen() {
                     renderItem={renderCategoryItem}
                     keyExtractor={item => `category-${item.strCategory}`}
                     contentContainerStyle={styles.categoryListContainer}
-                    ListEmptyComponent={<Text style={{ color: themeColors.text }}>No categories found.</Text>}
+                    // Use ListEmpty component
+                    ListEmptyComponent={<ListEmpty message="No categories found." />}
                 />
             )}
         </View>
 
-        {/* Recipes Section (Featured/Search/Category Results) */}
+        {/* Recipes Section */}
         <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>{getSectionTitle()}</Text>
-      
-                <FlatList
-                data={loadingRecipes ? Array(3).fill(0) : displayedRecipes} // Show skeletons or actual data
-                renderItem={({ item, index }) => { // Destructure index here
+             {/* Use SectionTitle component */}
+            <SectionTitle>{getSectionTitle()}</SectionTitle>
+            <FlatList
+                data={loadingRecipes ? Array(3).fill(0) : displayedRecipes}
+                renderItem={({ item, index }) => {
                     if (loadingRecipes) {
-                        // Render vertical skeleton directly
                         return <RecipeCardSkeleton key={`skeleton-${index}`} horizontal={false} />;
-                    } else {
-                        // Render actual recipe item
-                        return renderRecipeItem({ item });
-                    }
+                    } else if (item?.idMeal) {
+                        const displayRecipe: Recipe = {
+                          id: item.idMeal,
+                          name: item.strMeal,
+                          category: !selectedCategory ? item.strCategory || '' : '',
+                          imageUri: item.strMealThumb,
+                        };
+                        return (
+                          <RecipeCard
+                            recipe={displayRecipe}
+                            // isFavorite prop removed
+                            onPressCard={() => handleOpenRecipe(item.idMeal)}
+                            onPressAction={() => handleToggleFavorite(item)}
+                            actionIconType="favorite"
+                          />
+                        );
+                    } else { return null; }
                 }}
-                  keyExtractor={(item, index) => {
-                    // Use index for skeletons
-                    if (loadingRecipes) {
-                        return `skeleton-${index}`;
-                    }
-                    // For recipes, use idMeal if available, otherwise fallback to index
+                keyExtractor={(item, index) => {
+                    if (loadingRecipes) return `skeleton-${index}`;
                     return item?.idMeal ? `recipe-${item.idMeal}` : `recipe-fallback-${index}`;
                 }}
-                scrollEnabled={false} // Disable scrolling as ScrollView handles it
-                contentContainerStyle={{ paddingHorizontal: 16 }} // Add padding here instead of style
+                scrollEnabled={false}
+                // Use ListEmpty component
                 ListEmptyComponent={
-                    !loadingRecipes && displayedRecipes.length === 0 ? ( // Check loading state
-                        <Text style={{ color: themeColors.text, textAlign: 'center', marginTop: 20 }}>
-                            No recipes found.
-                        </Text>
+                    !loadingRecipes && displayedRecipes.length === 0 ? (
+                        <ListEmpty message="No recipes found." />
                     ) : null
                 }
-                />
+            />
         </View>
     </ScrollView>
+
+
+      {/* --- Recipe Detail Modal --- */}
+      <SimpleModal visible={isModalVisible} onClose={handleCloseModal}>
+        {/* Render content only when modal is intended to show a recipe */}
+        {selectedRecipeId && <RecipeDetailContent recipeId={selectedRecipeId} />}
+      </SimpleModal>
+    </>
   );
 }
 
@@ -235,16 +286,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 5, // Space between sections
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    marginTop: 10,
-  },
   // Categories
-  categoryListContainer: {
-    paddingVertical: 5,
-  },
+  categoryListContainer: { paddingVertical: 5, paddingHorizontal: 16 }, // Add padding here
+
   categoryChip: {
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -256,43 +300,5 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 14,
     fontWeight: '600',
-  },
-  // Featured Card (Horizontal) - for potential future use, 
-  featuredCard: {
-    borderRadius: 18,
-    marginRight: 16,
-    width: width * 0.6,
-    overflow: 'hidden',
-    elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8,
-  },
-  featuredImage: {
-    width: '100%', height: 120,
-  },
-  featuredCardContent: {
-    padding: 12,
-  },
-  featuredTitle: {
-    fontSize: 16, fontWeight: 'bold',
-  },
-  // Search/Recipe Card (Vertical)
-  searchCard: {
-    borderRadius: 18,
-    marginBottom: 24,
-    overflow: 'hidden',
-    elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8,
-  },
-  searchImage: {
-    width: '100%', height: 200,
-    backgroundColor: '#eee',
-  },
-  searchCardContent: {
-    padding: 16,
-    backgroundColor: 'transparent', 
-  },
-  searchTitle: {
-    fontSize: 20, fontWeight: 'bold', marginBottom: 6,
-  },
-  searchCategory: {
-    fontSize: 14, fontWeight: '600',
-  },
+  }
 });

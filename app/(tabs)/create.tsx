@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
@@ -6,18 +6,43 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '@/context/ThemeContext';
 import { useRecipes, Recipe } from '@/context/RecipeContext'; // Import Recipe type
 import { MaterialIcons } from '@expo/vector-icons'; // Import icons
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function CreateRecipeScreen() {
   const { themeColors } = useTheme();
-  const { addRecipe } = useRecipes(); // Get the addRecipe function
+  // --- Get updateRecipe and getRecipeById ---
+  const { addRecipe, updateRecipe, getRecipeById } = useRecipes();
+  const router = useRouter();
+  // --- Get recipeId from params ---
+  const params = useLocalSearchParams<{ recipeId?: string }>();
+  const editingRecipeId = params.recipeId;
+  const isEditing = !!editingRecipeId; // Check if we are in edit mode
 
   const [name, setName] = useState('');
-  const [category, setDescription] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [category, setCategory] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
 
+    // --- Load recipe data if editing ---
+    useEffect(() => {
+      if (isEditing && editingRecipeId) {
+        const recipeToEdit = getRecipeById(editingRecipeId);
+        if (recipeToEdit) {
+          setName(recipeToEdit.name);
+          setCategory(recipeToEdit.category || '');
+          setInstructions(recipeToEdit.instructions || '');
+          setImageUri(recipeToEdit.imageUri);
+        } else {
+          // Handle case where recipe ID is invalid or not found
+          Alert.alert("Error", "Could not find the recipe to edit.", [
+            { text: "OK", onPress: () => router.back() } // Go back if recipe not found
+          ]);
+        }
+      }
+    }, [editingRecipeId, isEditing, getRecipeById, router]); // Add dependencies
+    
   // Function to pick an image
   const pickImage = async () => {
-    // Request permission (important for iOS)
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
@@ -38,28 +63,38 @@ export default function CreateRecipeScreen() {
     }
   };
 
-  // Function to handle saving the recipe
+  // --- handleSaveRecipe for both create and update ---
   const handleSaveRecipe = () => {
     if (!name.trim() || !category.trim() || !imageUri) {
-      Alert.alert('Missing Information', 'Please fill in the name, description, and select an image.');
+      Alert.alert('Missing Information', 'Please fill in name, category, and select an image.');
       return;
     }
-        // Create the recipe object with a unique ID
-        const newRecipe = {
-          id: `custom-${Date.now().toString()}`, // Generate unique ID for custom recipes
-          name,
-          category,
-          imageUri,
-        };
 
-    addRecipe(newRecipe);
+    const recipeData: Recipe = {
+      // Use existing ID if editing, generate new one if creating
+      id: isEditing && editingRecipeId ? editingRecipeId : `custom-${Date.now().toString()}`,
+      name,
+      category,
+      instructions,
+      imageUri,
+      // Ensure ingredients is handled if needed, default to empty array if not editing
+      ingredients: isEditing ? getRecipeById(editingRecipeId!)?.ingredients || [] : [],
+    };
 
-    // Clear the form
-    setName('');
-    setDescription('');
-    setImageUri(null);
-
-    Alert.alert('Success', 'Recipe saved successfully!');
+    if (isEditing) {
+      updateRecipe(recipeData); // Call update function
+      Alert.alert('Success', 'Recipe updated successfully!');
+      router.back(); // Go back after updating
+    } else {
+      addRecipe(recipeData); // Call add function
+      // Clear form only when creating new
+      setName('');
+      setInstructions('');
+      setCategory('');
+      setImageUri(null);
+      Alert.alert('Success', 'Recipe saved successfully!');
+      // Optionally navigate away or stay
+    }
   };
 
   return (
@@ -93,6 +128,20 @@ export default function CreateRecipeScreen() {
         onChangeText={setName}
       />
 
+
+      {/* Category Input */}
+      <TextInput
+        style={[styles.input, {
+          backgroundColor: themeColors.primaryLight,
+          color: themeColors.text,
+          borderColor: themeColors.secondary
+        }]}
+        placeholder="Category"
+        placeholderTextColor={themeColors.secondary}
+        value={category}
+        onChangeText={setCategory}
+      />
+
       {/* Description Input */}
       <TextInput
         style={[styles.input, styles.textArea, {
@@ -100,20 +149,23 @@ export default function CreateRecipeScreen() {
           color: themeColors.text,
           borderColor: themeColors.secondary
         }]}
-        placeholder="Description / Instructions / Notes"
+        placeholder="Instructions / Notes"
         placeholderTextColor={themeColors.secondary}
-        value={category}
-        onChangeText={setDescription}
+        value={instructions}
+        onChangeText={setInstructions}
         multiline
         numberOfLines={4}
       />
 
-      {/* Save Button */}
+      {/* Save/Update Button */}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: themeColors.primary }]}
         onPress={handleSaveRecipe}
       >
-        <Text style={[styles.buttonText, { color: themeColors.white }]}>Save Recipe</Text>
+        {/* --- Change button text based on mode --- */}
+        <Text style={[styles.buttonText, { color: themeColors.white }]}>
+          {isEditing ? 'Update Recipe' : 'Save Recipe'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );

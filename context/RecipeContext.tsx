@@ -23,12 +23,12 @@ interface RecipeContextType {
   recipes: Recipe[];
   addRecipe: (recipe: Recipe) => void; 
   removeRecipe: (recipeID:string) => void;
+  updateRecipe: (updatedRecipe: Recipe) => void;
   isFavorite: (recipeID:string) => boolean;
   getRecipeById: (recipeId: string) => Recipe | undefined; 
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
-
 const RECIPES_STORAGE_KEY = '@MyRecipes:key'; // Key for AsyncStorage
 
 // Recipe Provider component
@@ -94,6 +94,14 @@ useEffect(() => {
     const getRecipeById = (recipeId: string): Recipe | undefined => {
         return recipes.find(recipe => recipe.id === recipeId);
     };
+
+    const updateRecipe = (updatedRecipe: Recipe) => {
+        setRecipes(prevRecipes =>
+          prevRecipes.map(recipe =>
+            recipe.id === updatedRecipe.id ? updatedRecipe : recipe
+          )
+        );
+      };
     
 
    // Don't render children until recipes are loaded
@@ -103,7 +111,7 @@ useEffect(() => {
 
 
 return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, removeRecipe, isFavorite, getRecipeById }}> {/* Add getRecipeById */}
+    <RecipeContext.Provider value={{ recipes, addRecipe, removeRecipe, isFavorite, getRecipeById, updateRecipe }}> {/* Add getRecipeById */}
       {children}
     </RecipeContext.Provider>
   );
