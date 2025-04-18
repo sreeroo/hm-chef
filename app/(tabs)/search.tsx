@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Dimensions, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { SearchBar } from '@rneui/themed';
+import { Image } from 'expo-image';
 import { useTheme } from '@/context/ThemeContext';
 import { getMealsByName, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
 import RecipeCardSkeleton from '@/components/RecipeCardSkeleton'; // Import the skeleton
 
 const { width } = Dimensions.get('window');
+
+const blurhash =
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+
 
 export default function SearchScreen() {
   const { themeColors } = useTheme();
@@ -91,20 +96,26 @@ export default function SearchScreen() {
       }
   }
   }, [selectedCategory, initialFeaturedRecipes]);
-
   // Render Recipe Item (used for featured and results)
   const renderRecipeItem = ({ item }: { item: any }) => (
     <TouchableOpacity style={[styles.searchCard, { backgroundColor: themeColors.primaryLight }]}>
-      <Image source={{ uri: item.strMealThumb }} style={styles.searchImage} />
+      {/* Use expo-image */}
+      <Image
+        placeholder={{ blurhash }}
+        style={styles.searchImage}
+        source={{ uri: item.strMealThumb }}
+        contentFit="cover" 
+        transition={600}
+      />
       <View style={styles.searchCardContent}>
         <Text style={[styles.searchTitle, { color: themeColors.primaryDark }]} numberOfLines={2}>{item.strMeal}</Text>
-        {/* Optionally show category if not filtering by category */}
         {!selectedCategory && item.strCategory && (
           <Text style={[styles.searchCategory, { color: themeColors.secondary }]}>{item.strCategory}</Text>
         )}
       </View>
     </TouchableOpacity>
   );
+
 
 
   // Render Category Item
@@ -272,6 +283,7 @@ const styles = StyleSheet.create({
   },
   searchImage: {
     width: '100%', height: 200,
+    backgroundColor: '#eee',
   },
   searchCardContent: {
     padding: 16,
