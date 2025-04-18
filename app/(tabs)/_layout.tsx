@@ -27,7 +27,6 @@ export default function TabLayout() {
         },
         headerTitleStyle: {
           letterSpacing: 1.5,
-          fontSize: 18,
           color: themeColors.primaryDark,
           fontFamily: "Poppins_700Bold"
         },
@@ -36,15 +35,10 @@ export default function TabLayout() {
           shadowColor: themeColors.primaryDark,
           shadowOpacity: 0.2,
           shadowRadius: 10,
-          borderTopWidth: 0,
           paddingVertical: 10,
           borderTopColor:themeColors.primaryLight,
-          backgroundColor: themeColors.background,
-          paddingTop: 5,
-          height: 60,
-        },
+          backgroundColor: themeColors.background,     },
         tabBarLabelStyle: {
-          fontSize: 12, // Modern and compact font size
           fontWeight: '600',
         },
       }}>
@@ -53,7 +47,7 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} size={26} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} size={30} />,
           headerTitle: 'Home',
           headerTitleAlign: 'center',
         }}
@@ -62,7 +56,7 @@ export default function TabLayout() {
         name="search"
         options={{
           title: 'Search',
-          tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} size={26} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} size={30} />,
           headerTitle: 'Discover',
           headerTitleAlign: 'center',
         }}
@@ -71,7 +65,7 @@ export default function TabLayout() {
         name="create"
         options={{
           title: 'Create',
-          tabBarIcon: ({color}) => <MaterialIcons name="add" color={color} size={26} />,
+          tabBarIcon: ({color}) => <MaterialIcons name="add" color={color} size={30} />,
           headerTitle: 'New Recipe',
           headerTitleAlign: 'center',
         }}
@@ -80,7 +74,7 @@ export default function TabLayout() {
         name="favorite"
         options={{
           title: 'My Recipes',
-          tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={26} />,
+          tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={30} />,
           headerTitle: 'My Recipes',
           headerTitleAlign: 'center',
         }}

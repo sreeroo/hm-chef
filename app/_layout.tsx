@@ -3,12 +3,11 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
-import { RootTagContext } from 'react-native';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { RecipeProvider } from '@/context/RecipeContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,11 +44,13 @@ export default function RootLayout() {
   }
 
   return (
+    <ThemeProvider>
     <SafeAreaProvider>
-      <ThemeProvider>
+        <RecipeProvider>
         <RootLayoutNav />
-      </ThemeProvider>
+        </RecipeProvider>
     </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 
