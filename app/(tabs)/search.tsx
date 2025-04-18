@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { SearchBar } from '@rneui/themed';
 import { useTheme } from '@/context/ThemeContext';
 import { getMealsByName, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
-import RecipeCardSkeleton from '@/components/RecipeCardSkeleton';
+import RecipeCardSkeleton from '@/components/RecipeCardSkeleton'; // Import the skeleton
 
 const { width } = Dimensions.get('window');
 
@@ -41,14 +41,15 @@ export default function SearchScreen() {
         }
       });
 
-    return () => { isMounted = false; };
+    return () => { isMounted = false; }; 
   }, []);
 
   // Handle Search Input
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
-    setSelectedCategory(null);
+    setSelectedCategory(null); // Clear category selection when searching
     if (query.trim() === "") {
+      setIsSearching(false);
       setIsSearching(false);
       setDisplayedRecipes(initialFeaturedRecipes); // Reset to initial featured
       setLoadingRecipes(false); // No loading needed for reset
@@ -65,19 +66,19 @@ export default function SearchScreen() {
     } finally {
       setLoadingRecipes(false);
     }
-  }, [initialFeaturedRecipes]); // Depend on initialFeaturedRecipes
+  }, []);
 
   // Handle Category Selection
   const handleSelectCategory = useCallback(async (categoryName: string) => {
-    setSearchQuery('');
+    setSearchQuery(''); // Clear search query
 
-    if (selectedCategory === categoryName) {
+    if(selectedCategory === categoryName){
       setSelectedCategory(null);
       setIsSearching(false);
       setDisplayedRecipes(initialFeaturedRecipes); // Reset to initial
     } else {
       setSelectedCategory(categoryName);
-      setIsSearching(false);
+      setIsSearching(false); // Not technically searching by name
       setLoadingRecipes(true);
       try {
         const data = await getMealsByCategory(categoryName);
@@ -88,10 +89,10 @@ export default function SearchScreen() {
       } finally {
         setLoadingRecipes(false);
       }
-    }
-  }, [selectedCategory, initialFeaturedRecipes]); // Depend on both
+  }
+  }, [selectedCategory, initialFeaturedRecipes]);
 
-  // Render Recipe Item
+  // Render Recipe Item (used for featured and results)
   const renderRecipeItem = ({ item }: { item: any }) => (
     <TouchableOpacity style={[styles.searchCard, { backgroundColor: themeColors.primaryLight }]}>
       <Image source={{ uri: item.strMealThumb }} style={styles.searchImage} />
@@ -104,6 +105,7 @@ export default function SearchScreen() {
       </View>
     </TouchableOpacity>
   );
+
 
   // Render Category Item
   const renderCategoryItem = ({ item }: { item: any }) => (
@@ -118,109 +120,111 @@ export default function SearchScreen() {
     </TouchableOpacity>
   );
 
-  // Render skeleton loaders for recipes
-  const renderRecipeSkeleton = () => (
-    <RecipeCardSkeleton horizontal={false} /> // Always vertical for the main list
-  );
-
   const getSectionTitle = () => {
       if (searchQuery.trim()) return "Search Results";
       if (selectedCategory) return `Recipes in ${selectedCategory}`;
       return "Featured Recipes";
   }
 
-  // Header Component for the main FlatList
-  const ListHeader = () => (
-    <>
-      {/* Search Bar */}
-      <SearchBar
-          placeholder="Search for recipes..."
-          value={searchQuery}
-          onChangeText={handleSearch}
-          platform="default"
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={[styles.searchInputContainer, { backgroundColor: themeColors.primaryLight }]}
-          inputStyle={{ color: themeColors.text }}
-          placeholderTextColor={themeColors.secondary}
-          round
-          showLoading={isSearching && loadingRecipes}
-      />
-
-      {/* Categories Section */}
-      <View style={styles.sectionContainer}>
-          <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>Categories</Text>
-          {loadingCategories ? (
-              <ActivityIndicator color={themeColors.primary} style={{ marginVertical: 10 }}/>
-          ) : (
-              <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  data={categories}
-                  renderItem={renderCategoryItem}
-                  keyExtractor={item => `category-${item.strCategory}`}
-                  contentContainerStyle={styles.categoryListContainer}
-                  ListEmptyComponent={<Text style={{ color: themeColors.text }}>No categories found.</Text>}
-              />
-          )}
-      </View>
-
-      {/* Title for the Recipes List */}
-      <View style={styles.sectionContainer}>
-        <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>{getSectionTitle()}</Text>
-      </View>
-    </>
-  );
-
   return (
-    <FlatList
+    <ScrollView
         style={[styles.container, { backgroundColor: themeColors.background }]}
-        data={loadingRecipes ? Array(5).fill(0) : displayedRecipes} // Show skeletons or actual data
-        renderItem={loadingRecipes ? renderRecipeSkeleton : renderRecipeItem}
-        keyExtractor={(item, index) => loadingRecipes ? `skeleton-${index}` : `recipe-${item.idMeal}`}
-        ListHeaderComponent={ListHeader}
-        contentContainerStyle={styles.listContentContainer}
-        keyboardShouldPersistTaps="handled"
-        ListEmptyComponent={
-            !loadingRecipes && displayedRecipes.length === 0 ? (
-                <Text style={{ color: themeColors.text, textAlign: 'center', marginTop: 20 }}>
-                    No recipes found.
-                </Text>
-            ) : null
-        }
-    />
+        stickyHeaderIndices={[0]} // Make the SearchBar sticky
+        keyboardShouldPersistTaps="handled" // Dismiss keyboard on scroll tap
+    >
+        {/* Search Bar Container */}
+        <View style={{ backgroundColor: themeColors.background, paddingBottom: 5 }}>
+            <SearchBar
+                placeholder="Search for recipes..."
+                value={searchQuery}
+                onChangeText={handleSearch} 
+                platform="default"
+                containerStyle={styles.searchBarContainer}
+                inputContainerStyle={[styles.searchInputContainer, { backgroundColor: themeColors.primaryLight }]}
+                inputStyle={{ color: themeColors.text }}
+                placeholderTextColor={themeColors.secondary}
+                round
+                showLoading={isSearching && loadingRecipes} // Show loading only when actively searching
+            />
+        </View>
+
+        {/* Categories Section */}
+        <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>Categories</Text>
+            {loadingCategories ? (
+                <ActivityIndicator color={themeColors.primary} style={{ marginVertical: 10 }}/>
+            ) : (
+                <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    renderItem={renderCategoryItem}
+                    keyExtractor={item => `category-${item.strCategory}`}
+                    contentContainerStyle={styles.categoryListContainer}
+                    ListEmptyComponent={<Text style={{ color: themeColors.text }}>No categories found.</Text>}
+                />
+            )}
+        </View>
+
+        {/* Recipes Section (Featured/Search/Category Results) */}
+        <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { color: themeColors.primaryDark }]}>{getSectionTitle()}</Text>
+      
+                <FlatList
+                data={loadingRecipes ? Array(3).fill(0) : displayedRecipes} // Show skeletons or actual data
+                renderItem={({ item, index }) => { // Destructure index here
+                    if (loadingRecipes) {
+                        // Render vertical skeleton directly
+                        return <RecipeCardSkeleton key={`skeleton-${index}`} horizontal={false} />;
+                    } else {
+                        // Render actual recipe item
+                        return renderRecipeItem({ item });
+                    }
+                }}
+                keyExtractor={(item, index) => {
+                    // Use index for skeletons, idMeal for recipes
+                    return loadingRecipes ? `skeleton-${index}` : `recipe-${item.idMeal}`;
+                }}
+                scrollEnabled={false} // Disable scrolling as ScrollView handles it
+                contentContainerStyle={{ paddingHorizontal: 16 }} // Add padding here instead of style
+                ListEmptyComponent={
+                    !loadingRecipes && displayedRecipes.length === 0 ? ( // Check loading state
+                        <Text style={{ color: themeColors.text, textAlign: 'center', marginTop: 20 }}>
+                            No recipes found.
+                        </Text>
+                    ) : null
+                }
+                />
+        </View>
+    </ScrollView>
   );
 }
 
-// --- Styles ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  listContentContainer: {
-    paddingBottom: 20, // Add padding at the bottom
   },
   // Search Bar
   searchBarContainer: {
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingTop: 10,
-    paddingBottom: 5,
     borderBottomWidth: 0,
     borderTopWidth: 0,
   },
   searchInputContainer: {
     borderRadius: 12,
   },
-  // Section (used for Categories title and Recipes title)
+  // Section
   sectionContainer: {
     paddingHorizontal: 16,
-    // marginBottom: 5, // Reduced space between sections if needed
+    marginBottom: 5, // Space between sections
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
-    marginTop: 15, // Consistent top margin
+    marginTop: 10,
   },
   // Categories
   categoryListContainer: {
@@ -232,17 +236,33 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    // borderColor: 'transparent', // Set dynamically or remove if not needed
+    borderColor: 'red'
   },
   categoryText: {
     fontSize: 14,
     fontWeight: '600',
   },
+  // Featured Card (Horizontal) - for potential future use, 
+  featuredCard: {
+    borderRadius: 18,
+    marginRight: 16,
+    width: width * 0.6,
+    overflow: 'hidden',
+    elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8,
+  },
+  featuredImage: {
+    width: '100%', height: 120,
+  },
+  featuredCardContent: {
+    padding: 12,
+  },
+  featuredTitle: {
+    fontSize: 16, fontWeight: 'bold',
+  },
   // Search/Recipe Card (Vertical)
   searchCard: {
     borderRadius: 18,
     marginBottom: 24,
-    marginHorizontal: 16, // Add horizontal margin to cards
     overflow: 'hidden',
     elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8,
   },
@@ -251,7 +271,7 @@ const styles = StyleSheet.create({
   },
   searchCardContent: {
     padding: 16,
-    backgroundColor: 'transparent', // Ensure content background is transparent if card has color
+    backgroundColor: 'transparent', 
   },
   searchTitle: {
     fontSize: 20, fontWeight: 'bold', marginBottom: 6,
