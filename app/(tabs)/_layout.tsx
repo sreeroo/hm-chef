@@ -7,7 +7,7 @@ import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-font
 
 export default function TabLayout() {
 
-  const themeColor = useTheme();
+  const { themeColors } = useTheme();
   useFonts({
     Poppins_400Regular,
     Poppins_700Bold,
@@ -16,31 +16,30 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor:themeColor.themeColors.tabIconSelected,
-        tabBarInactiveTintColor: themeColor.themeColors.tabIconDefault,
+        tabBarActiveTintColor:themeColors.tabIconSelected,
+        tabBarInactiveTintColor: themeColors.tabIconDefault,
         headerShown: useClientOnlyValue(false, true),
         headerStyle: {
-          backgroundColor: themeColor.themeColors.background,
+          backgroundColor: themeColors.background,
           borderBottomWidth: 0, 
-          height: 50,
           elevation: 5, 
-          borderTopColor: themeColor.themeColors.primaryLight,
+          borderTopColor: themeColors.primaryLight,
         },
         headerTitleStyle: {
           letterSpacing: 1.5,
           fontSize: 18,
-          color: themeColor.themeColors.primaryDark,
+          color: themeColors.primaryDark,
           fontFamily: "Poppins_700Bold"
         },
         tabBarStyle: {
           elevation: 5,
-          shadowColor: themeColor.themeColors.primaryDark,
+          shadowColor: themeColors.primaryDark,
           shadowOpacity: 0.2,
           shadowRadius: 10,
           borderTopWidth: 0,
           paddingVertical: 10,
-          borderTopColor: themeColor.themeColors.primaryLight,
-          backgroundColor: themeColor.themeColors.background,
+          borderTopColor:themeColors.primaryLight,
+          backgroundColor: themeColors.background,
           paddingTop: 5,
           height: 60,
         },
