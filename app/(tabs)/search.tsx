@@ -181,9 +181,13 @@ export default function SearchScreen() {
                         return renderRecipeItem({ item });
                     }
                 }}
-                keyExtractor={(item, index) => {
-                    // Use index for skeletons, idMeal for recipes
-                    return loadingRecipes ? `skeleton-${index}` : `recipe-${item.idMeal}`;
+                  keyExtractor={(item, index) => {
+                    // Use index for skeletons
+                    if (loadingRecipes) {
+                        return `skeleton-${index}`;
+                    }
+                    // For recipes, use idMeal if available, otherwise fallback to index
+                    return item?.idMeal ? `recipe-${item.idMeal}` : `recipe-fallback-${index}`;
                 }}
                 scrollEnabled={false} // Disable scrolling as ScrollView handles it
                 contentContainerStyle={{ paddingHorizontal: 16 }} // Add padding here instead of style
