@@ -1,32 +1,34 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { SearchBar } from '@rneui/themed';
-import { Image } from 'expo-image';
 import { useTheme } from '@/context/ThemeContext';
-import { getMealsByName, getMealDetailsById, parseIngredients, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
-import RecipeCardSkeleton from '@/components/Cards/RecipeCardSkeleton'; 
-import { MaterialIcons } from '@expo/vector-icons'; 
-import { useRecipeContext, Recipe} from '@/context/RecipeContext';
-import RecipeCard from '@/components/Cards/RecipeCard';
-import { router, useRouter } from 'expo-router'; // Import useRouter
-import SectionTitle from '@/components/SectionTitle';
-import ListEmpty from '@/components/ListEmpty';
-import SimpleModal from '@/components/SimpleModal'; // Import the modal
-import RecipeDetailContent from '@/components/RecipeDetailContent'; // Import the content component
+import {
+  getMealsByName,
+  getMealDetailsById,
+  parseIngredients,
+  getRandomMeals,
+  getCategories,
+  getMealsByCategory,
+} from '@/services/api';
+import RecipeCardSkeleton from '@/components/Recipe/RecipeCardSkeleton';
+import { useRecipeContext, Recipe } from '@/context/RecipeContext';
+import RecipeCard from '@/components/Recipe/RecipeCard';
+import SectionTitle from '@/components/UI/SectionTitle';
+import ListEmpty from '@/components/UI/ListEmpty';
+import SimpleModal from '@/components/UI/SimpleModal';
+import RecipeDetailContent from '@/components/Recipe/RecipeDetailContent';
 
-
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
+type Category = { strCategory: string };
 
 export default function SearchScreen() {
   const { themeColors } = useTheme();
-  const { addRecipe, removeRecipe, isFavorite } = useRecipeContext(); // Get context functions
+  const { addRecipe, removeRecipe, isFavorite } = useRecipeContext();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [displayedRecipes, setDisplayedRecipes] = useState<any[]>([]);
   const [initialFeaturedRecipes, setInitialFeaturedRecipes] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loadingRecipes, setLoadingRecipes] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
@@ -48,7 +50,7 @@ export default function SearchScreen() {
           setCategories(categoryData);
         }
       })
-      .catch(e => console.error("Failed to fetch initial data:", e))
+      .catch(e => console.error('Failed to fetch initial data:', e))
       .finally(() => {
         if (isMounted) {
           setLoadingRecipes(false);
@@ -56,210 +58,236 @@ export default function SearchScreen() {
         }
       });
 
-    return () => { isMounted = false; }; 
-  }, []);
-
-  const handleToggleFavorite = async (basicRecipeData: any) => {
-    const recipeId = basicRecipeData.idMeal;
-
-    if (isFavorite(recipeId)) {
-      // If already favorite, just remove it
-      removeRecipe(recipeId);
-    } else {
-      // If not favorite, fetch full details before adding
-      try {
-        const fullMealData = await getMealDetailsById(recipeId);
-        if (fullMealData) {
-          // --- FIX: Construct the complete Recipe object correctly ---
-          const newFavorite: Recipe = {
-            id: fullMealData.idMeal,
-            name: fullMealData.strMeal,
-            // Correctly map API fields to Recipe interface fields
-            category: fullMealData.strCategory || '',      // Use 'category' field
-            imageUri: fullMealData.strMealThumb,
-            ingredients: parseIngredients(fullMealData), // Parse ingredients
-            instructions: fullMealData.strInstructions || '', 
-          };
-          addRecipe(newFavorite); // Add the complete recipe to context
-        } else {
-          console.error(`Failed to fetch details for ${recipeId} before favoriting.`);
-          // Optionally show an alert
-        }
-      } catch (error) {
-        console.error(`Error fetching details for ${recipeId}:`, error);
-        // Optionally show an alert
-      }
-    }
-  };
-
-  const handleOpenRecipe = (recipeId: string) => {
-    setSelectedRecipeId(recipeId);
-    setIsModalVisible(true);
-  };
-
-    // Function to close the modal
-    const handleCloseModal = () => {
-      setIsModalVisible(false);
-      setSelectedRecipeId(null); // Clear selected ID when closing
+    return () => {
+      isMounted = false;
     };
-  
-
-  // Handle Search Input
-  const handleSearch = useCallback(async (query: string) => {
-    setSearchQuery(query);
-    setSelectedCategory(null); // Clear category selection when searching
-    if (query.trim() === "") {
-      setIsSearching(false);
-      setDisplayedRecipes(initialFeaturedRecipes); // Reset to initial featured
-      setLoadingRecipes(false); // No loading needed for reset
-      return;
-    }
-    setIsSearching(true);
-    setLoadingRecipes(true);
-    try {
-      const data = await getMealsByName(query);
-      setDisplayedRecipes(data);
-    } catch (e) {
-      console.error("Failed to search recipes:", e);
-      setDisplayedRecipes([]);
-    } finally {
-      setLoadingRecipes(false);
-    }
   }, []);
 
-  // Handle Category Selection
-  const handleSelectCategory = useCallback(async (categoryName: string) => {
-    setSearchQuery(''); // Clear search query
-
-    if(selectedCategory === categoryName){
+  // Search handler
+  const handleSearch = useCallback(
+    async (query: string) => {
+      setSearchQuery(query);
       setSelectedCategory(null);
-      setIsSearching(false);
-      setDisplayedRecipes(initialFeaturedRecipes); // Reset to initial
-    } else {
-      setSelectedCategory(categoryName);
-      setIsSearching(false); // Not technically searching by name
+      if (query.trim() === '') {
+        setIsSearching(false);
+        setDisplayedRecipes(initialFeaturedRecipes);
+        setLoadingRecipes(false);
+        return;
+      }
+      setIsSearching(true);
       setLoadingRecipes(true);
       try {
-        const data = await getMealsByCategory(categoryName);
+        const data = await getMealsByName(query);
         setDisplayedRecipes(data);
       } catch (e) {
-        console.error(`Failed to fetch recipes for category ${categoryName}:`, e);
+        console.error('Failed to search recipes:', e);
         setDisplayedRecipes([]);
       } finally {
         setLoadingRecipes(false);
       }
-  }
-  }, [selectedCategory, initialFeaturedRecipes]);
-
-
-  // Render Category Item
-  const renderCategoryItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-        style={[styles.categoryChip, {
-            backgroundColor: selectedCategory === item.strCategory ? themeColors.primary : themeColors.primaryLight,
-            borderColor: selectedCategory === item.strCategory ? themeColors.primary : themeColors.secondary // Adjust border color
-        }]}
-        onPress={() => handleSelectCategory(item.strCategory)}
-    >
-      <Text style={[styles.categoryText, { color: selectedCategory === item.strCategory ? themeColors.white : themeColors.primaryDark }]}>{item.strCategory}</Text>
-    </TouchableOpacity>
+    },
+    [initialFeaturedRecipes]
   );
 
-  const getSectionTitle = () => {
-      if (searchQuery.trim()) return "Search Results";
-      if (selectedCategory) return `Recipes in ${selectedCategory}`;
-      return "Featured Recipes";
-  }
+  // Category selection handler
+  const handleSelectCategory = useCallback(
+    async (categoryName: string) => {
+      setSearchQuery('');
+      if (selectedCategory === categoryName) {
+        setSelectedCategory(null);
+        setIsSearching(false);
+        setDisplayedRecipes(initialFeaturedRecipes);
+      } else {
+        setSelectedCategory(categoryName);
+        setIsSearching(false);
+        setLoadingRecipes(true);
+        try {
+          const data = await getMealsByCategory(categoryName);
+          setDisplayedRecipes(data);
+        } catch (e) {
+          console.error(`Failed to fetch recipes for category ${categoryName}:`, e);
+          setDisplayedRecipes([]);
+        } finally {
+          setLoadingRecipes(false);
+        }
+      }
+    },
+    [selectedCategory, initialFeaturedRecipes]
+  );
+
+  // Favorite toggle handler
+  const handleToggleFavorite = useCallback(
+    async (basicRecipeData: any) => {
+      const recipeId = basicRecipeData.idMeal;
+      if (isFavorite(recipeId)) {
+        removeRecipe(recipeId);
+      } else {
+        try {
+          const fullMealData = await getMealDetailsById(recipeId);
+          if (fullMealData) {
+            const newFavorite: Recipe = {
+              id: fullMealData.idMeal,
+              name: fullMealData.strMeal,
+              category: fullMealData.strCategory || '',
+              imageUri: fullMealData.strMealThumb,
+              ingredients: parseIngredients(fullMealData),
+              instructions: fullMealData.strInstructions || '',
+            };
+            addRecipe(newFavorite);
+          }
+        } catch (error) {
+          console.error(`Error fetching details for ${recipeId}:`, error);
+        }
+      }
+    },
+    [addRecipe, removeRecipe, isFavorite]
+  );
+
+  // Modal open/close handlers
+  const handleOpenRecipe = useCallback((recipeId: string) => {
+    setSelectedRecipeId(recipeId);
+    setIsModalVisible(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalVisible(false);
+    setSelectedRecipeId(null);
+  }, []);
+
+  // Section title logic
+  const getSectionTitle = useCallback(() => {
+    if (searchQuery.trim()) return 'Search Results';
+    if (selectedCategory) return `Recipes in ${selectedCategory}`;
+    return 'Featured Recipes';
+  }, [searchQuery, selectedCategory]);
+
+  // Render category chip
+  const renderCategoryItem = useCallback(
+    ({ item }: { item: Category }) => (
+      <TouchableOpacity
+        style={[
+          styles.categoryChip,
+          {
+            backgroundColor:
+              selectedCategory === item.strCategory
+                ? themeColors.primary
+                : themeColors.primaryLight,
+            borderColor:
+              selectedCategory === item.strCategory
+                ? themeColors.primary
+                : themeColors.secondary,
+          },
+        ]}
+        onPress={() => handleSelectCategory(item.strCategory)}
+      >
+        <Text
+          style={[
+            styles.categoryText,
+            {
+              color:
+                selectedCategory === item.strCategory
+                  ? themeColors.white
+                  : themeColors.primaryDark,
+            },
+          ]}
+        >
+          {item.strCategory}
+        </Text>
+      </TouchableOpacity>
+    ),
+    [selectedCategory, themeColors, handleSelectCategory]
+  );
 
   return (
     <>
-    <ScrollView
+      <ScrollView
         style={[styles.container, { backgroundColor: themeColors.background }]}
-        stickyHeaderIndices={[0]} // Make the SearchBar sticky
-        keyboardShouldPersistTaps="handled" // Dismiss keyboard on scroll tap
-    >
-        {/* Search Bar Container */}
+        stickyHeaderIndices={[0]}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Search Bar */}
         <View style={{ backgroundColor: themeColors.background, paddingBottom: 5 }}>
-            <SearchBar
-                placeholder="Search for recipes..."
-                value={searchQuery}
-                onChangeText={handleSearch} 
-                platform="default"
-                containerStyle={styles.searchBarContainer}
-                inputContainerStyle={[styles.searchInputContainer, { backgroundColor: themeColors.primaryLight }]}
-                inputStyle={{ color: themeColors.text }}
-                placeholderTextColor={themeColors.secondary}
-                round
-                showLoading={isSearching && loadingRecipes} // Show loading only when actively searching
-            />
+          <SearchBar
+            placeholder="Search for recipes..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+            platform="default"
+            containerStyle={styles.searchBarContainer}
+            inputContainerStyle={[
+              styles.searchInputContainer,
+              { backgroundColor: themeColors.primaryLight },
+            ]}
+            inputStyle={{ color: themeColors.text }}
+            placeholderTextColor={themeColors.secondary}
+            round
+            showLoading={isSearching && loadingRecipes}
+          />
         </View>
 
-        {/* Categories Section */}
+        {/* Categories */}
         <View style={styles.sectionContainer}>
-            {/* Use SectionTitle component */}
-            <SectionTitle>Categories</SectionTitle>
-            {loadingCategories ? (
-                <ActivityIndicator color={themeColors.primary} style={{ marginVertical: 10 }}/>
-            ) : (
-                <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={categories}
-                    renderItem={renderCategoryItem}
-                    keyExtractor={item => `category-${item.strCategory}`}
-                    contentContainerStyle={styles.categoryListContainer}
-                    // Use ListEmpty component
-                    ListEmptyComponent={<ListEmpty message="No categories found." />}
-                />
-            )}
-        </View>
-
-        {/* Recipes Section */}
-        <View style={styles.sectionContainer}>
-             {/* Use SectionTitle component */}
-            <SectionTitle>{getSectionTitle()}</SectionTitle>
+          <SectionTitle>Categories</SectionTitle>
+          {loadingCategories ? (
+            <ActivityIndicator color={themeColors.primary} style={{ marginVertical: 10 }} />
+          ) : (
             <FlatList
-                data={loadingRecipes ? Array(3).fill(0) : displayedRecipes}
-                renderItem={({ item, index }) => {
-                    if (loadingRecipes) {
-                        return <RecipeCardSkeleton key={`skeleton-${index}`} horizontal={false} />;
-                    } else if (item?.idMeal) {
-                        const displayRecipe: Recipe = {
-                          id: item.idMeal,
-                          name: item.strMeal,
-                          category: !selectedCategory ? item.strCategory || '' : '',
-                          imageUri: item.strMealThumb,
-                        };
-                        return (
-                          <RecipeCard
-                            recipe={displayRecipe}
-                            // isFavorite prop removed
-                            onPressCard={() => handleOpenRecipe(item.idMeal)}
-                            onPressAction={() => handleToggleFavorite(item)}
-                            actionIconType="favorite"
-                          />
-                        );
-                    } else { return null; }
-                }}
-                keyExtractor={(item, index) => {
-                    if (loadingRecipes) return `skeleton-${index}`;
-                    return item?.idMeal ? `recipe-${item.idMeal}` : `recipe-fallback-${index}`;
-                }}
-                scrollEnabled={false}
-                // Use ListEmpty component
-                ListEmptyComponent={
-                    !loadingRecipes && displayedRecipes.length === 0 ? (
-                        <ListEmpty message="No recipes found." />
-                    ) : null
-                }
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={categories}
+              renderItem={renderCategoryItem}
+              keyExtractor={item => `category-${item.strCategory}`}
+              contentContainerStyle={styles.categoryListContainer}
+              ListEmptyComponent={<ListEmpty message="No categories found." />}
             />
+          )}
         </View>
-    </ScrollView>
 
+        {/* Recipes */}
+        <View style={styles.sectionContainer}>
+          <SectionTitle>{getSectionTitle()}</SectionTitle>
+          <FlatList
+            data={loadingRecipes ? Array(3).fill(0) : displayedRecipes}
+            renderItem={({ item, index }) => {
+              if (loadingRecipes) {
+                return <RecipeCardSkeleton key={`skeleton-${index}`} horizontal={false} />;
+              } else if (item?.idMeal) {
+                const displayRecipe: Recipe = {
+                  id: item.idMeal,
+                  name: item.strMeal,
+                  category: !selectedCategory ? item.strCategory || '' : '',
+                  imageUri: item.strMealThumb,
+                };
+                return (
+                  <RecipeCard
+                    recipe={displayRecipe}
+                    onPressCard={() => handleOpenRecipe(item.idMeal)}
+                    onPressAction={() => handleToggleFavorite(item)}
+                    actionIconType="favorite"
+                  />
+                );
+              } else {
+                return null;
+              }
+            }}
+            keyExtractor={(item, index) =>
+              loadingRecipes
+                ? `skeleton-${index}`
+                : item?.idMeal
+                ? `recipe-${item.idMeal}`
+                : `recipe-fallback-${index}`
+            }
+            scrollEnabled={false}
+            ListEmptyComponent={
+              !loadingRecipes && displayedRecipes.length === 0 ? (
+                <ListEmpty message="No recipes found." />
+              ) : null
+            }
+          />
+        </View>
+      </ScrollView>
 
-      {/* --- Recipe Detail Modal --- */}
+      {/* Recipe Detail Modal */}
       <SimpleModal visible={isModalVisible} onClose={handleCloseModal}>
-        {/* Render content only when modal is intended to show a recipe */}
         {selectedRecipeId && <RecipeDetailContent recipeId={selectedRecipeId} />}
       </SimpleModal>
     </>
@@ -267,10 +295,7 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  // Search Bar
+  container: { flex: 1 },
   searchBarContainer: {
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
@@ -278,27 +303,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     borderTopWidth: 0,
   },
-  searchInputContainer: {
-    borderRadius: 12,
-  },
-  // Section
-  sectionContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 5, // Space between sections
-  },
-  // Categories
-  categoryListContainer: { paddingVertical: 5, paddingHorizontal: 16 }, // Add padding here
-
+  searchInputContainer: { borderRadius: 12 },
+  sectionContainer: { paddingHorizontal: 16, marginBottom: 5 },
+  categoryListContainer: { paddingVertical: 5, paddingHorizontal: 16 },
   categoryChip: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: 'red'
+    borderColor: 'red',
   },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
-  }
+  categoryText: { fontSize: 14, fontWeight: '600' },
 });
