@@ -54,7 +54,7 @@ useEffect(() => {
   }, []);
 
   // Save recipes to storage whenever they change
-  useEffect(() => {
+useEffect(() => {
     const saveRecipes = async () => {
         // Don't save while initially loading
         if (!isLoading) {
@@ -72,7 +72,7 @@ useEffect(() => {
   // Function to add a new recipe (ensuring no duplicates)
   const addRecipe = (newRecipe: Recipe) => {
     setRecipes(prevRecipes => {
-      // Check if recipe with the same ID already exists
+      // Check if recipe with the same ID already exists to ensure unique recipes in the list
       if (prevRecipes.some(recipe => recipe.id === newRecipe.id)) {
         return prevRecipes; // Don't add if duplicate
       }
@@ -118,7 +118,7 @@ return (
 };
 
 // Custom hook to use the Recipe context
-export const useRecipes = () => {
+export const useRecipeContext = () => {
   const context = useContext(RecipeContext);
   if (context === undefined) {
     throw new Error('useRecipes must be used within a RecipeProvider');

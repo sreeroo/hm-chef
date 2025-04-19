@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Image, View, Text, ScrollView } from 'react-native'; // Import ScrollView
+import { StyleSheet, Image, ScrollView } from 'react-native'; // Import ScrollView
 import { useTheme } from '@/context/ThemeContext';
+import { View, Text } from '@/components/Themed';
 import { router } from 'expo-router';
 import WelcomeCard from '@/components/Cards/WelcomeCard'; // Import the new WelcomeCard
 

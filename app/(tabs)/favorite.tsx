@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, Alert } from 'react-native';
 import { View } from '@/components/Themed'; // Only View needed from Themed if ListEmpty handles text
 import { useTheme } from '@/context/ThemeContext';
-import { useRecipes } from '@/context/RecipeContext';
+import { useRecipeContext } from '@/context/RecipeContext';
 import RecipeCard from '@/components/Cards/RecipeCard';
 import ListEmpty from '@/components/ListEmpty'; // Import ListEmpty
 import SimpleModal from '@/components/SimpleModal'; // Import the modal
@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 
 export default function MyRecipesScreen() {
   const { themeColors } = useTheme();
-  const { recipes, removeRecipe } = useRecipes();
+  const { recipes, removeRecipe } = useRecipeContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 

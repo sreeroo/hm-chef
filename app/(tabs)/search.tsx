@@ -7,7 +7,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { getMealsByName, getMealDetailsById, parseIngredients, getRandomMeals, getCategories, getMealsByCategory } from '@/services/api';
 import RecipeCardSkeleton from '@/components/Cards/RecipeCardSkeleton'; 
 import { MaterialIcons } from '@expo/vector-icons'; 
-import { useRecipes, Recipe} from '@/context/RecipeContext';
+import { useRecipeContext, Recipe} from '@/context/RecipeContext';
 import RecipeCard from '@/components/Cards/RecipeCard';
 import { router, useRouter } from 'expo-router'; // Import useRouter
 import SectionTitle from '@/components/SectionTitle';
@@ -22,7 +22,7 @@ const blurhash =
 
 export default function SearchScreen() {
   const { themeColors } = useTheme();
-  const { addRecipe, removeRecipe, isFavorite } = useRecipes(); // Get context functions
+  const { addRecipe, removeRecipe, isFavorite } = useRecipeContext(); // Get context functions
   const [searchQuery, setSearchQuery] = useState('');
   const [displayedRecipes, setDisplayedRecipes] = useState<any[]>([]);
   const [initialFeaturedRecipes, setInitialFeaturedRecipes] = useState<any[]>([]);
@@ -59,7 +59,7 @@ export default function SearchScreen() {
     return () => { isMounted = false; }; 
   }, []);
 
-  const handleToggleFavorite = async (basicRecipeData: any) => { // Make async
+  const handleToggleFavorite = async (basicRecipeData: any) => {
     const recipeId = basicRecipeData.idMeal;
 
     if (isFavorite(recipeId)) {

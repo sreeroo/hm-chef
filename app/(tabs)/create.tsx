@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
+import ImagePicker from 'expo-image-picker';
 import { useTheme } from '@/context/ThemeContext';
-import { useRecipes, Recipe } from '@/context/RecipeContext'; // Import Recipe type
-import { MaterialIcons } from '@expo/vector-icons'; // Import icons
+import { useRecipeContext, Recipe } from '@/context/RecipeContext';
+import { MaterialIcons } from '@expo/vector-icons'; 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function CreateRecipeScreen() {
   const { themeColors } = useTheme();
   // --- Get updateRecipe and getRecipeById ---
-  const { addRecipe, updateRecipe, getRecipeById } = useRecipes();
+  const { addRecipe, updateRecipe, getRecipeById } = useRecipeContext();
   const router = useRouter();
   // --- Get recipeId from params ---
   const params = useLocalSearchParams<{ recipeId?: string }>();
