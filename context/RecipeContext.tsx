@@ -23,7 +23,6 @@ interface RecipeContextType {
   recipes: Recipe[];
   addRecipe: (recipe: Recipe) => void; 
   removeRecipe: (recipeID:string) => void;
-  updateRecipe: (updatedRecipe: Recipe) => void;
   isFavorite: (recipeID:string) => boolean;
   getRecipeById: (recipeId: string) => Recipe | undefined; 
 }
@@ -95,23 +94,14 @@ useEffect(() => {
         return recipes.find(recipe => recipe.id === recipeId);
     };
 
-    const updateRecipe = (updatedRecipe: Recipe) => {
-        setRecipes(prevRecipes =>
-          prevRecipes.map(recipe =>
-            recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-          )
-        );
-      };
-    
-
    // Don't render children until recipes are loaded
    if (isLoading) {
-    return <></>; // Or return a loading indicator component
+    return null;
 }
 
 
 return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, removeRecipe, isFavorite, getRecipeById, updateRecipe }}> {/* Add getRecipeById */}
+    <RecipeContext.Provider value={{ recipes, addRecipe, removeRecipe, isFavorite, getRecipeById }}>
       {children}
     </RecipeContext.Provider>
   );
