@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
-import { View, Text} from './Themed';
+import { View, Text} from '../Themed';
 
 const ListEmpty = ({ message }: { message: string }) => {
   const { themeColors } = useTheme();

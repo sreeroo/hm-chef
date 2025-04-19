@@ -3,10 +3,10 @@ import { StyleSheet, FlatList, Alert } from 'react-native';
 import { View } from '@/components/Themed';
 import { useTheme } from '@/context/ThemeContext';
 import { useRecipeContext } from '@/context/RecipeContext';
-import RecipeCard from '@/components/Cards/RecipeCard';
-import ListEmpty from '@/components/ListEmpty';
-import SimpleModal from '@/components/SimpleModal';
-import RecipeDetailContent from '@/components/RecipeDetailContent';
+import RecipeCard from '@/components/Recipe/RecipeCard';
+import ListEmpty from '@/components/UI/ListEmpty';
+import SimpleModal from '@/components/UI/SimpleModal';
+import RecipeDetailContent from '@/components/Recipe/RecipeDetailContent';
 import { Image } from 'expo-image';
 
 export default function MyRecipesScreen() {

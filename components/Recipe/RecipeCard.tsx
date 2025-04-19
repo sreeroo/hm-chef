@@ -4,8 +4,8 @@ import { Text, View } from '@/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
 import { Recipe, useRecipeContext } from '@/context/RecipeContext';
-import RecipeImage from '../RecipeImage';
-import Card from './Card'; 
+import RecipeImage from './RecipeImage';
+import Card from '../Cards/Card'; 
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -63,7 +63,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 
 const styles = StyleSheet.create({
   recipeCardContainer: {
-    // Override default Card margin if needed, or add specific styles
     marginHorizontal: 16, // Keep horizontal margin specific to RecipeCard list usage
     marginBottom: 24, // Keep specific bottom margin for lists
   },
