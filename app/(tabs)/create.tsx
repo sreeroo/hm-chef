@@ -1,100 +1,81 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
-import ImagePicker from 'expo-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '@/context/ThemeContext';
 import { useRecipeContext, Recipe } from '@/context/RecipeContext';
-import { MaterialIcons } from '@expo/vector-icons'; 
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 
 export default function CreateRecipeScreen() {
   const { themeColors } = useTheme();
-  // --- Get updateRecipe and getRecipeById ---
-  const { addRecipe, updateRecipe, getRecipeById } = useRecipeContext();
+  const { addRecipe, getRecipeById } = useRecipeContext();
   const router = useRouter();
-  // --- Get recipeId from params ---
-  const params = useLocalSearchParams<{ recipeId?: string }>();
-  const editingRecipeId = params.recipeId;
-  const isEditing = !!editingRecipeId; // Check if we are in edit mode
+  const navigation = useNavigation();
 
+  // Form state
   const [name, setName] = useState('');
   const [instructions, setInstructions] = useState('');
   const [category, setCategory] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-    // --- Load recipe data if editing ---
-    useEffect(() => {
-      if (isEditing && editingRecipeId) {
-        const recipeToEdit = getRecipeById(editingRecipeId);
-        if (recipeToEdit) {
-          setName(recipeToEdit.name);
-          setCategory(recipeToEdit.category || '');
-          setInstructions(recipeToEdit.instructions || '');
-          setImageUri(recipeToEdit.imageUri);
-        } else {
-          // Handle case where recipe ID is invalid or not found
-          Alert.alert("Error", "Could not find the recipe to edit.", [
-            { text: "OK", onPress: () => router.back() } // Go back if recipe not found
-          ]);
+
+  // Reset form function that can be called from multiple places
+  const resetForm = useCallback(() => {
+    setName('');
+    setCategory('');
+    setInstructions('');
+    setImageUri(null);
+  }, []);
+  
+
+  // Pick image - fixed with error handling
+  const pickImage = async () => {
+    try {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+          return;
         }
       }
-    }, [editingRecipeId, isEditing, getRecipeById, router]); // Add dependencies
-    
-  // Function to pick an image
-  const pickImage = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
-        return;
+      
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImageUri(result.assets[0].uri);
       }
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1, 
-    });
-
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Could not open image picker. Please try again.');
     }
   };
 
-  // --- handleSaveRecipe for both create and update ---
+  // Save or update recipe
   const handleSaveRecipe = () => {
     if (!name.trim() || !category.trim() || !imageUri) {
       Alert.alert('Missing Information', 'Please fill in name, category, and select an image.');
       return;
     }
-
+    
     const recipeData: Recipe = {
-      // Use existing ID if editing, generate new one if creating
-      id: isEditing && editingRecipeId ? editingRecipeId : `custom-${Date.now().toString()}`,
+      id: `custom-${Date.now()}`,
       name,
       category,
       instructions,
       imageUri,
-      // Ensure ingredients is handled if needed, default to empty array if not editing
-      ingredients: isEditing ? getRecipeById(editingRecipeId!)?.ingredients || [] : [],
+      ingredients: [],
     };
-
-    if (isEditing) {
-      updateRecipe(recipeData); // Call update function
-      Alert.alert('Success', 'Recipe updated successfully!');
-      router.back(); // Go back after updating
-    } else {
-      addRecipe(recipeData); // Call add function
-      // Clear form only when creating new
-      setName('');
-      setInstructions('');
-      setCategory('');
-      setImageUri(null);
+    
+      addRecipe(recipeData);
+      resetForm();
       Alert.alert('Success', 'Recipe saved successfully!');
-      // Optionally navigate away or stay
-    }
   };
 
   return (
@@ -104,13 +85,19 @@ export default function CreateRecipeScreen() {
       keyboardShouldPersistTaps="handled"
     >
       {/* Image Picker */}
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+      <TouchableOpacity 
+        style={styles.imagePicker} 
+        onPress={pickImage}
+        activeOpacity={0.7}
+      >
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.imagePreview} contentFit="cover" />
         ) : (
           <View style={styles.imagePlaceholder}>
-             <MaterialIcons name="add-photo-alternate" size={50} color={themeColors.secondary} />
-             <Text style={[styles.imagePickerText, { color: themeColors.secondary }]}>Tap to select image</Text>
+            <MaterialIcons name="add-photo-alternate" size={50} color={themeColors.secondary} />
+            <Text style={[styles.imagePickerText, { color: themeColors.secondary }]}>
+              Tap to select image
+            </Text>
           </View>
         )}
       </TouchableOpacity>
@@ -127,7 +114,6 @@ export default function CreateRecipeScreen() {
         value={name}
         onChangeText={setName}
       />
-
 
       {/* Category Input */}
       <TextInput
@@ -161,10 +147,10 @@ export default function CreateRecipeScreen() {
       <TouchableOpacity
         style={[styles.button, { backgroundColor: themeColors.primary }]}
         onPress={handleSaveRecipe}
+        activeOpacity={0.8}
       >
-        {/* --- Change button text based on mode --- */}
         <Text style={[styles.buttonText, { color: themeColors.white }]}>
-          {isEditing ? 'Update Recipe' : 'Save Recipe'}
+          Save Recipe
         </Text>
       </TouchableOpacity>
     </ScrollView>
@@ -180,12 +166,12 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginBottom: 20, backgroundColor: '#f0f0f0',
     overflow: 'hidden',
   },
-  imagePlaceholder: { // Style for the placeholder content
+  imagePlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
-    width:'100%',
-    height:'100%',
-    backgroundColor:'transparent'
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent'
   },
   imagePreview: { width: '100%', height: '100%' },
   imagePickerText: { fontSize: 16, marginTop: 10 },

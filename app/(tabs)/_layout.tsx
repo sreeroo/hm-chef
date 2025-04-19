@@ -28,7 +28,10 @@ export default function TabLayout() {
         headerTitleStyle: {
           letterSpacing: 1.5,
           color: themeColors.primaryDark,
-          fontFamily: "Poppins_700Bold"
+          fontFamily: "Poppins_700Bold",
+        },
+        headerTitleContainerStyle: {
+          paddingVertical: 8,
         },
         tabBarStyle: {
           elevation: 5,
@@ -71,7 +74,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="favorite"
+        name="myrecipes"
         options={{
           title: 'My Recipes',
           tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={30} />,

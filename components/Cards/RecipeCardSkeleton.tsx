@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { View } from '../Themed';
 
 const RecipeCardSkeleton = ({ horizontal = false }: { horizontal?: boolean }) => {
   const { themeColors } = useTheme();
