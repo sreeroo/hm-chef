@@ -246,7 +246,7 @@ export default function SearchScreen() {
         <View style={styles.sectionContainer}>
           <SectionTitle>{getSectionTitle()}</SectionTitle>
           <FlatList
-            data={loadingRecipes ? Array(3).fill(0) : displayedRecipes}
+            data={loadingRecipes ? Array(3).fill(0) : displayedRecipes} //Show 3 loading recipes blur image
             renderItem={({ item, index }) => {
               if (loadingRecipes) {
                 return <RecipeCardSkeleton key={`skeleton-${index}`} horizontal={false} />;
@@ -254,8 +254,9 @@ export default function SearchScreen() {
                 const displayRecipe: Recipe = {
                   id: item.idMeal,
                   name: item.strMeal,
-                  category: !selectedCategory ? item.strCategory || '' : '',
+                  category: item.strCategory || selectedCategory || '', 
                   imageUri: item.strMealThumb,
+                  ingredients: [], 
                 };
                 return (
                   <RecipeCard

@@ -50,11 +50,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               </TouchableOpacity>
             </View>
           </View>
-          {recipe.category && (
-             <Text style={[styles.category, { color: themeColors.text }]} numberOfLines={3}>
-               {recipe.category}
-             </Text>
-          )}
+          <Text style={[styles.category, { color: themeColors.text }]}>
+          {recipe.category }
+        </Text>
         </View>
       </TouchableOpacity>
     </Card>
