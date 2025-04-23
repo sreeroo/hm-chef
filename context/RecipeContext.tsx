@@ -79,17 +79,14 @@ useEffect(() => {
     });
   };
 
-    // Function to remove a recipe by ID
     const removeRecipe = (recipeId: string) => {
         setRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.id !== recipeId));
       };
     
-        // Function to check if a recipe is already a favorite
   const isFavorite = (recipeId: string): boolean => {
     return recipes.some(recipe => recipe.id === recipeId);
   };
 
-    // Function to get a specific recipe by ID from the context
     const getRecipeById = (recipeId: string): Recipe | undefined => {
         return recipes.find(recipe => recipe.id === recipeId);
     };

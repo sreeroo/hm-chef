@@ -10,18 +10,15 @@ import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 
 export default function CreateRecipeScreen() {
   const { themeColors } = useTheme();
-  const { addRecipe, getRecipeById } = useRecipeContext();
-  const router = useRouter();
-  const navigation = useNavigation();
+  const { addRecipe } = useRecipeContext();
 
-  // Form state
+
   const [name, setName] = useState('');
   const [instructions, setInstructions] = useState('');
   const [category, setCategory] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
 
 
-  // Reset form function that can be called from multiple places
   const resetForm = useCallback(() => {
     setName('');
     setCategory('');
@@ -30,7 +27,6 @@ export default function CreateRecipeScreen() {
   }, []);
   
 
-  // Pick image - fixed with error handling
   const pickImage = async () => {
     try {
       if (Platform.OS !== 'web') {
@@ -57,7 +53,7 @@ export default function CreateRecipeScreen() {
     }
   };
 
-  // Save or update recipe
+  // Save recipe
   const handleSaveRecipe = () => {
     if (!name.trim() || !category.trim() || !imageUri) {
       Alert.alert('Missing Information', 'Please fill in name, category, and select an image.');
