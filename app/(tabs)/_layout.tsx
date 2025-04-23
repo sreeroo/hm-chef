@@ -31,7 +31,7 @@ export default function TabLayout() {
           fontFamily: "Poppins_700Bold",
         },
         headerTitleContainerStyle: {
-          paddingVertical: 8,
+          paddingVertical: 0,
         },
         tabBarStyle: {
           elevation: 5,
@@ -47,7 +47,7 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen redirect name="index" />
       <Tabs.Screen
-        name="home"
+        name="Home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} size={30} />,
@@ -56,7 +56,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="Search"
         options={{
           title: 'Search',
           tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} size={30} />,
@@ -65,7 +65,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="create"
+        name="Create"
         options={{
           title: 'Create',
           tabBarIcon: ({color}) => <MaterialIcons name="add" color={color} size={30} />,
@@ -74,7 +74,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="myrecipes"
+        name="MyRecipes"
         options={{
           title: 'My Recipes',
           tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={30} />,

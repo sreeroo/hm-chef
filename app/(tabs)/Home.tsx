@@ -28,7 +28,7 @@ export default function HomeScreen() {
         title="Welcome to HM Chef!"
         description="Discover delicious recipes and bring out the chef in you. Let's make cooking fun and easy!"
         buttonText="Explore Recipes"
-        onPress={() => router.navigate('/search')}
+        onPress={() => router.navigate('/Search')}
         style={{ backgroundColor: themeColors.primaryLight, marginHorizontal: 0 }}
       />
 
