@@ -149,14 +149,12 @@ const RecipeDetailContent: React.FC<RecipeDetailContentProps> = ({ recipeId }) =
       <Text style={[styles.title, { color: themeColors.primaryDark }]}>{recipe.name}</Text>
 
       {/* Category */}
-      {recipe.category ? (
-        <View style={styles.categoryContainer}>
-          <MaterialIcons name="category" size={16} color={themeColors.secondary} />
-          <Text style={[styles.category, { color: themeColors.secondary }]}>
-            {recipe.category}
-          </Text>
-        </View>
-      ) : null}
+      <View style={styles.categoryContainer}>
+        <MaterialIcons name="category" size={16} color={themeColors.secondary} />
+        <Text style={[styles.category, { color: themeColors.secondary }]}>
+          {recipe.category || 'Uncategorized'}
+        </Text>
+      </View>
 
       {/* Ingredients Section */}
       <View style={styles.section}>
