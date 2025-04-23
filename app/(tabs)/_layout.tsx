@@ -26,9 +26,8 @@ export default function TabLayout() {
           borderTopColor: themeColors.primaryLight,
         },
         headerTitleStyle: {
-          letterSpacing: 1.5,
+          letterSpacing: 1,
           color: themeColors.primaryDark,
-          fontFamily: "Poppins_700Bold",
         },
         headerTitleContainerStyle: {
           paddingVertical: 0,
