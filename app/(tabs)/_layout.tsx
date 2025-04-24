@@ -1,57 +1,84 @@
 import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
+import { Tabs } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { useTheme } from '@/context/ThemeContext';
+import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
+  const { themeColors } = useTheme();
+  useFonts({
+    Poppins_400Regular,
+    Poppins_700Bold,
+  });
+  
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
+        tabBarActiveTintColor:themeColors.tabIconSelected,
+        tabBarInactiveTintColor: themeColors.tabIconDefault,
         headerShown: useClientOnlyValue(false, true),
+        headerStyle: {
+          backgroundColor: themeColors.background,
+          borderBottomWidth: 0, 
+          elevation: 5, 
+          borderTopColor: themeColors.primaryLight,
+        },
+        headerTitleStyle: {
+          letterSpacing: 1,
+          color: themeColors.primaryDark,
+        },
+        headerTitleContainerStyle: {
+          paddingVertical: 0,
+        },
+        tabBarStyle: {
+          elevation: 5,
+          shadowColor: themeColors.primaryDark,
+          shadowOpacity: 0.2,
+          shadowRadius: 10,
+          paddingVertical: 10,
+          borderTopColor:themeColors.primaryLight,
+          backgroundColor: themeColors.background,     },
+        tabBarLabelStyle: {
+          fontWeight: '600',
+        },
       }}>
+      <Tabs.Screen redirect name="index" />
       <Tabs.Screen
-        name="index"
+        name="Home"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color }) => <MaterialIcons name="home" color={color} size={30} />,
+          headerTitle: 'Home',
+          headerTitleAlign: 'center',
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="Search"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Search',
+          tabBarIcon: ({ color }) => <MaterialIcons name="search" color={color} size={30} />,
+          headerTitle: 'Discover',
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Tabs.Screen
+        name="Create"
+        options={{
+          title: 'Create',
+          tabBarIcon: ({color}) => <MaterialIcons name="add" color={color} size={30} />,
+          headerTitle: 'New Recipe',
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Tabs.Screen
+        name="MyRecipes"
+        options={{
+          title: 'My Recipes',
+          tabBarIcon: ({color}) => <MaterialIcons name="favorite" color={color} size={30} />,
+          headerTitle: 'My Recipes',
+          headerTitleAlign: 'center',
         }}
       />
     </Tabs>
