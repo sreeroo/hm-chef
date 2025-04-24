@@ -139,11 +139,11 @@ const RecipeDetailContent: React.FC<RecipeDetailContentProps> = ({ recipeId }) =
 
   const hasIngredients = recipe.ingredients && recipe.ingredients.length > 0;
 
-  // --- Render Recipe Details ---
+  // --- Render Recipe Details (MODAL in this project) ---
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* Image */}
-      <RecipeImage uri={recipe.imageUri} height={200} />
+      <RecipeImage uri={recipe.imageUri} height={200} style={styles.image}/>
 
       {/* Title */}
       <Text style={[styles.title, { color: themeColors.primaryDark }]}>{recipe.name}</Text>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
-    minHeight: 200, // Ensure it takes some space
+    minHeight: 200, 
   },
   title: {
     fontSize: 24, // Slightly smaller for modal
@@ -201,6 +201,9 @@ const styles = StyleSheet.create({
     marginTop: 15, // Space after image
     marginBottom: 5,
     textAlign: 'center',
+  },
+  image: {
+    borderRadius: 10,
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   category: {
-    fontSize: 14, // Smaller category text
+    fontSize: 14, 
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -260,12 +263,12 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   stepNumberText: {
-    fontSize: 14, // Smaller text
+    fontSize: 14, 
     fontWeight: 'bold',
   },
   instructionsText: {
-    fontSize: 15, // Slightly smaller instructions
-    lineHeight: 22, // Adjust line height
+    fontSize: 15, 
+    lineHeight: 22, 
     flex: 1,
   },
 });

@@ -5,9 +5,9 @@ import { StyleSheet } from 'react-native';
 const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
-const RecipeImage = ({ uri, height = 200 }: { uri: string | null, height?: number }) => (
+const RecipeImage = ({ uri, height = 200, style,}: { uri: string | null, height?: number, style?:{} }) => (
   <Image
-    style={[styles.image, { height }]}
+    style={[style, styles.image, { height }]}
     source={{ uri: uri || undefined }}
     placeholder={{ blurhash }}
     contentFit="cover"
