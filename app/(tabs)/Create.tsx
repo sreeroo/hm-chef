@@ -6,7 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '@/context/ThemeContext';
 import { useRecipeContext, Recipe } from '@/context/RecipeContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 
 export default function CreateRecipeScreen() {
   const { themeColors } = useTheme();
