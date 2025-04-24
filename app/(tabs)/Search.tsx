@@ -64,8 +64,7 @@ export default function SearchScreen() {
   }, []);
 
   // Search handler
-  const handleSearch = useCallback(
-    async (query: string) => {
+  const handleSearch = async (query: string)=> {
       setSearchQuery(query);
       setSelectedCategory(null);
       if (query.trim() === '') {
@@ -85,13 +84,11 @@ export default function SearchScreen() {
       } finally {
         setLoadingRecipes(false);
       }
-    },
-    [initialFeaturedRecipes]
-  );
+    }
+  
 
   // Category selection handler
-  const handleSelectCategory = useCallback(
-    async (categoryName: string) => {
+  const handleSelectCategory = async (categoryName: string) => {
       setSearchQuery('');
       if (selectedCategory === categoryName) {
         setSelectedCategory(null);
@@ -111,9 +108,7 @@ export default function SearchScreen() {
           setLoadingRecipes(false);
         }
       }
-    },
-    [selectedCategory, initialFeaturedRecipes]
-  );
+    }
 
   // Favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -155,11 +150,11 @@ export default function SearchScreen() {
   }, []);
 
   // Section title logic
-  const getSectionTitle = useCallback(() => {
+  const getSectionTitle = () => {
     if (searchQuery.trim()) return 'Search Results';
     if (selectedCategory) return `Recipes in ${selectedCategory}`;
     return 'Featured Recipes';
-  }, [searchQuery, selectedCategory]);
+  }
 
   // Render category chip
   const renderCategoryItem = useCallback(
