@@ -24,8 +24,24 @@ export async function getRandomMeals(count: number = 10) {
         return res.json();
       })
     );
-    const results = await Promise.all(promises);
-    return results.map(r => r.meals && r.meals[0]).filter(Boolean);
+
+    const result = await Promise.all(promises) // wait for all promises to settle
+
+    const uniqueMealsMap = new Map<string, any>();
+    const seenIds = new Set<string>(); // to track unique IDs
+
+    result.forEach(recipe => {
+      const meal = recipe?.meals?.[0];
+      
+      if (meal && meal.idMeal){
+        if (!seenIds.has(meal.idMeal)) {
+          uniqueMealsMap.set(meal.idMeal, meal);
+          seenIds.add(meal.idMeal);
+        }
+      }
+    });
+    const uniqueData = Array.from(uniqueMealsMap.values());
+    return uniqueData;
   } catch (error) {
     console.error("Error fetching random meals:", error);
     return []; // Return empty array on error
